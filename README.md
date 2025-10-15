@@ -9,7 +9,7 @@ This repository includes the following files:
 - `WMF.R`: Scriot implementing Bayesian circular functional models (wrapped multivariate functional models)
 - `Experiment.R`: Script to run experiments in the paper
 - `Experiment-Summary.R`: Script to summarize experimental results to reproduce tables/figures in the paper 
-- `PLV-original.RData`: Phase locking values (PLV) based on the original dataset obtained from [real EEG dataset available from the University of Cambridge Data Repository](https://www.repository.cam.ac.uk/handle/1810/252736}).
+- `PLV-original.RData`: Phase locking values (PLV) based on the original dataset obtained from [real EEG dataset available from the University of Cambridge Data Repository](https://www.repository.cam.ac.uk/handle/1810/252736).
 - `Data-Gaussian-noise.zip`: Zip file to include data with added Gaussian noise
 - `Data-Gaussian-noise.zip`: Zip file to include data with added uniform noise
 
