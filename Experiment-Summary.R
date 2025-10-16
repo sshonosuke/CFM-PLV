@@ -2,24 +2,22 @@
 ###           Code for summarizing experimental results                 ###
 ###---------------------------------------------------------------------###
 rm(list=ls())
-error <- "Gaussian"     # "Gaussian" or "uniform"
+error <- "uniform"     # "Gaussian" or "uniform"
 data_type <- "alpha"    #  "alpha" or "beta"
 
 
 ## baseline data (without noise)
 load("PLV-original.RData")
-if(data_type=="alpha"){ base <- hPLV_alpha }
-if(data_type=="beta"){ base <- hPLV_beta }
+if(data_type=="alpha"){ base <- PLV_alpha }
+if(data_type=="beta"){ base <- PLV_beta }
 
 
 ## Absolute error 
 M <- 6
 AE <- CI95l <- CI95u <- matrix(NA, M, 2)
 
-noise_level <- 0.1    # 0.1, 0.2, 0.3, 0.4, 0.5, 0.6 for Gaussian / 0.2, 0.4, 0.6, 0.8, 1.0, 1.2 for Uniform
-
-if(erorr=="Gaussian"){ noise_level_set <- (1:M)/10 }
-if(erorr=="uniform"){ noise_level_set <- 2*(1:M)/10 }
+if(error=="Gaussian"){ noise_level_set <- (1:M)/10 }
+if(error=="uniform"){ noise_level_set <- 2*(1:M)/10 }
 for(j in 1:M){
   load(paste0("Result-", data_type, "-", error, "-noise", noise_level_set[j], ".RData"))
   Est <- cbind(hPLV_model, hPLV_naive)
@@ -36,16 +34,16 @@ library(dplyr)
 library(tidyr)
 
 method <- c("Model-based", "Naive")
-df_plot <- data.frame(sigma = rep(sigma_set, times=2), method = rep(method, each=length(sigma_set)),
+df_plot <- data.frame(noise=rep(noise_level_set, times=2), method = rep(method, each=length(noise_level_set)),
   AE = as.vector(AE), CI_low = as.vector(CI95l), CI_up = as.vector(CI95u))
 
 # figure
-pdf(paste0("Fig-", data_type, "-Gaussian.pdf"), height=7, width=9)
-ggplot(df_plot, aes(x=sigma, y=AE, color=method, shape=method)) +
+pdf(paste0("Fig-", data_type, "-", error, ".pdf"), height=7, width=9)
+ggplot(df_plot, aes(x=noise, y=AE, color=method, shape=method)) +
   geom_line(size=1) +
   geom_point(size=3) +
   geom_ribbon(aes(ymin=CI_low, ymax=CI_up, fill=method), alpha=0.2, color=NA) +
-  labs(x="(Gaussian noise) band", y="Absolute Difference of PLV", color="Method", shape="Method", fill="Method") +
+  labs(x=paste0("(", error, " noise) band"), y="Absolute Difference of PLV", color="Method", shape="Method", fill="Method") +
   theme_minimal(base_size=18) +
   scale_color_manual(values=c("blue", "red")) +
   scale_fill_manual(values=c("blue", "red")) +
@@ -86,7 +84,7 @@ n_bins <- 5
 bin_breaks <- seq(0, 1, length.out = n_bins + 1)
 
 post_df <- as.data.frame(post_prob)
-names(post_df) <- paste0(sigma_set)
+names(post_df) <- paste0(noise_level_set)
 post_df$y <- Ind_base
 post_long <- post_df %>% pivot_longer(cols=-y, names_to="model", values_to="prob")
 
@@ -106,7 +104,7 @@ ggplot(reliability_data, aes(x=bin_mid, y=accuracy, color=model)) +
   labs(
     x="Mean predicted probability",
     y="Observed accuracy",
-    title="Gaussian noise",
+    title=paste0(error, " noise"),
     color="noise level",
     size="Bin count"
   ) +
